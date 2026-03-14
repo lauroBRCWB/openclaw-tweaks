@@ -1,0 +1,9 @@
+# /etc/hosts
+127.0.0.1 moltbook.com
+127.0.0.1 www.moltbook.com
+::1 moltbook.com
+::1 www.moltbook.com
+127.0.0.1 clawhub.io
+127.0.0.1 clawhub.io
+::1 clawhub.io
+::1 clawhub.io
