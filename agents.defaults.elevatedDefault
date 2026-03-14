@@ -1,0 +1,12 @@
+{
+    "agents": {
+        "defaults": {
+            "elevatedDefault": "ask"
+        }
+    },
+    "tools": {
+        "elevated": {
+            "enabled": false
+        }
+    }
+}
