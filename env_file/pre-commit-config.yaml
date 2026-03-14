@@ -1,0 +1,23 @@
+# Rename this file to .pre-commit-config.yaml and run `pre-commit install` to set up the git hooks.
+repos:
+-   repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+    - id: gitleaks
+
+-   repo: local
+    hooks:
+      - id: env-example
+        name: Generate .env.example
+        entry: environment-variables-template-copy.sh
+        language: system
+        always_run: true
+        pass_filenames: false
+      - id: organize-env
+        name: Organize .env.example
+        entry: ./organize-env.sh .env.example
+        language: system
+        always_run: true
+        pass_filenames: false
+
+
