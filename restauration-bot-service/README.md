@@ -9,7 +9,7 @@ A Telegram bot that accepts deterministic commands and runs them on the Linux ho
     - [`/git_pull` ref resolution](#git_pull-ref-resolution)
     - [Inline Command Menu](#inline-command-menu)
   - [Requirements](#requirements)
-    - [Set up the virtual environment](#set-up-the-virtual-environment)
+  - [Deploy script](#deploy-script)
   - [Configuration](#configuration)
     - [Required variables](#required-variables)
   - [Running manually](#running-manually)
@@ -66,12 +66,37 @@ When you send `/start`, `/help`, or `/menu`, the bot displays an **inline keyboa
 
 > **Do not use `pipx`** — it is for CLI tools, not libraries. Use a plain `venv` instead.
 
-### Set up the virtual environment
+---
+
+## Deploy script
+
+`deploy.sh` is the recommended way to install or update the bot. It handles everything end-to-end:
+
+1. **Prompts for missing env vars** and appends them to the `.env` file
+2. **Pulls latest code** from `origin/main` (skipped gracefully if the directory is not a git repo)
+3. **Patches the service file** with the correct paths and username
+4. **Creates the Python venv** and installs dependencies
+5. **Adds a sudoers entry** so the bot user can run `/sbin/reboot` without a password
+6. **Installs and starts** the systemd service
+7. **Shows service status** and optionally tails the journal
 
 ```bash
-cd ~/.openclaw/telegram/restauration-bot-service
-python3 -m venv .venv
-.venv/bin/pip install "python-telegram-bot>=20" python-dotenv requests
+bash deploy.sh [openclaw_dir] [username]
+```
+
+| Argument | Default | Description |
+|---|---|---|
+| `openclaw_dir` | `~/.openclaw` | Path to the openclaw directory |
+| `username` | current user (`whoami`) | Linux user that will run the service |
+
+Examples:
+
+```bash
+# Defaults: ~/.openclaw, current user
+bash deploy.sh
+
+# Custom openclaw dir, explicit username
+bash deploy.sh /home/lauro/.openclaw lauro
 ```
 
 ---
@@ -111,19 +136,15 @@ cd ~/.openclaw/telegram/restauration-bot-service
 
 ## Installing as a systemd service
 
-1. Edit `User=` in the service file to match your actual Linux username:
+The deploy script handles this automatically. To do it manually:
 
-```bash
-sudo nano /etc/systemd/system/openclaw-telegram-bot.service
-```
-
-2. Copy the service file:
+1. Patch the service file with your actual paths and username, then copy it:
 
 ```bash
 sudo cp openclaw-telegram-bot.service /etc/systemd/system/
 ```
 
-3. Reload systemd and enable the service:
+2. Reload systemd and enable the service:
 
 ```bash
 sudo systemctl daemon-reload
@@ -131,14 +152,12 @@ sudo systemctl enable openclaw-telegram-bot
 sudo systemctl start openclaw-telegram-bot
 ```
 
-4. Check status and logs:
+3. Check status and logs:
 
 ```bash
 sudo systemctl status openclaw-telegram-bot
 journalctl -u openclaw-telegram-bot -f
 ```
-
-The service uses `%h` (systemd's home directory specifier for `User=`) so paths resolve automatically.
 
 ---
 
@@ -156,7 +175,9 @@ The script reads the token from the same env / `.env` sources as the bot.
 
 ## `/reboot` safety
 
-The `/reboot` command requires `sudo reboot` to be allowed without a password for the service user. Add to `/etc/sudoers` (use `visudo`):
+The `/reboot` command requires `sudo reboot` to be allowed without a password for the service user. The deploy script handles this automatically by writing to `/etc/sudoers.d/openclaw-reboot`.
+
+To do it manually (use `visudo` to edit safely):
 
 ```
 USERNAME ALL=(ALL) NOPASSWD: /sbin/reboot
