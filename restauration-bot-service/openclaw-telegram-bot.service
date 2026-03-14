@@ -1,0 +1,16 @@
+[Unit]
+Description=OpenClaw Telegram restauration bot
+After=network.target
+
+[Service]
+Type=simple
+User=USERNAME
+WorkingDirectory=OPENCLAW_HOME/telegram/restauration-bot-service
+ExecStart=OPENCLAW_HOME/telegram/restauration-bot-service/.venv/bin/python OPENCLAW_HOME/telegram/restauration-bot-service/bot.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
