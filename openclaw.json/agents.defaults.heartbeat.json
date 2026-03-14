@@ -1,0 +1,15 @@
+{
+  "agents": {
+    "defaults": {
+      "heartbeat": {
+        "every": "2h",
+        "activeHours": {
+          "start": "06:00",
+          "end": "22:00"
+        },
+        "model": "moonshot/kimi-k2.5",
+        "includeReasoning": true
+      }
+    }
+  }
+}

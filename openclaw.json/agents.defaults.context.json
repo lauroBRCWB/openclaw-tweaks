@@ -1,0 +1,11 @@
+{
+  "agents": {
+    "defaults": {
+      "contextTokens": 100000,
+      "contextPruning": {
+        "mode": "cache-ttl",
+        "ttl": "1h"
+      }
+    }
+  }
+}
